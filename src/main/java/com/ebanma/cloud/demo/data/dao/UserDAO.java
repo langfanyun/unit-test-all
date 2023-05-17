@@ -5,7 +5,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 @Mapper
-public interface UserDao {
+public interface UserDAO {
 
     Long getIdByName(@Param("name") String name);
 
