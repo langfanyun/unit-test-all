@@ -33,12 +33,27 @@ public class Order {
         this.status = status;
     }
 
-    public Long getId() {
-        return id;
+    public void effective() {
+        this.status = OrderStatus.EFFECTIVE;
+        this.effectiveTime = new Date();
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void archive() {
+        this.status = OrderStatus.ARCHIVE;
+        this.effectiveTime = null;
+    }
+
+    public String getMemberName() {
+        return this.member.getName();
+    }
+
+    public String toReadableString() {
+        return "Order{" +
+                "id=" + id +
+                ", orderNo=" + orderNo + '\'' +
+                ", memver=" + member.toString() +
+                ", status=" + status +
+                "}";
     }
 
     public String getOrderNo() {
