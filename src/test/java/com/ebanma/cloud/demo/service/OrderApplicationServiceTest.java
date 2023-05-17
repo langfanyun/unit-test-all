@@ -63,7 +63,34 @@ public class OrderApplicationServiceTest {
         Long userId = order.getMember().getId();
 
         when(userCacheAdapter.getUserById(userId)).thenReturn(null);
-//        UserDTO userDTO = new UserDTO();
+        UserDTO userDTO = new UserDTO("userName");
+        when(userAdapter.getExternalUserInfo(userId)).thenReturn(userDTO);
 
+        orderApplicationService.create(order);
+
+        verify(orderRepository).save(orderArgumentCaptor.capture());
+        verify(userCacheAdapter).cacheUser(userDTO);
+        Order saved = orderArgumentCaptor.getValue();
+        Assertions.assertThat(saved.getMember().getName()).isEqualTo("userName");
+        Assertions.assertThat(saved.getMember().getId()).isEqualTo(userId);
+
+    }
+
+    @Test
+    public void should_save_order_with_no_member_name_user_when_create_order_given_no_user() {
+        Order order = OrderTestData.genOrder();
+        order.getMember().setName(null);
+        Long userId = order.getMember().getId();
+
+        when(userCacheAdapter.getUserById(userId)).thenReturn(null);
+        when(userAdapter.getExternalUserInfo(userId)).thenReturn(null);
+
+        orderApplicationService.create(order);
+
+        verify(orderRepository).save(orderArgumentCaptor.capture());
+        verify(userCacheAdapter, times(0)).cacheUser(any());
+        Order saved = orderArgumentCaptor.getValue();
+        Assertions.assertThat(saved.getMember().getName()).isNull();
+        Assertions.assertThat(saved.getMember().getId()).isEqualTo(userId);
     }
 }
