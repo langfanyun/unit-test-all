@@ -1,6 +1,6 @@
 package com.ebanma.cloud.demo.domain.service;
 
-import com.ebanma.cloud.demo.data.dao.UserDAO;
+import com.ebanma.cloud.demo.data.dao.UserDao;
 import com.ebanma.cloud.demo.data.model.UserDO;
 import com.ebanma.cloud.demo.domain.entity.UserVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +13,7 @@ import java.util.Objects;
 public class UserService {
 
     @Autowired
-    private UserDAO userDao;
+    private UserDao userDao;
     @Autowired
     private IdGenerator idGenerator;
 
