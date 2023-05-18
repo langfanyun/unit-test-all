@@ -61,4 +61,54 @@ public class UserServiceTest {
         // 验证依赖对象
         Mockito.verifyNoMoreInteractions(idGenerator, userDao);
     }
+
+    @Test
+    public void testSaveUserWithModify() {
+        // 模拟依赖方法:userDao.getIdByName
+        Long userId = 123L;
+        Mockito.doReturn(userId).when(userDao).getIdByName(Mockito.anyString());
+
+        // 调用测试方法
+        String path = RESOURCE_PATH + "testSaveUserWithModify/";
+        String text = ResourceHelper.getResourceAsString(getClass(), path + "userSave.json");
+        UserVO userSave = JSON.parseObject(text, UserVO.class);
+        Assert.assertEquals("用户标识不一致", userId, userService.saveUser(userSave));
+
+        // 验证依赖方法:userDao.getIdByName
+        Mockito.verify(userDao).getIdByName(userSave.getName());
+        // 验证依赖方法:userDao.modify
+        ArgumentCaptor<UserDO> userModifyCaptor = ArgumentCaptor.forClass(UserDO.class);
+        Mockito.verify(userDao).modify(userModifyCaptor.capture());
+        text = ResourceHelper.getResourceAsString(getClass(), path + "userModify.json");
+        Assert.assertEquals("用户修改不一致", text, JSON.toJSONString(userModifyCaptor.getValue()));
+
+        // 验证依赖对象
+        Mockito.verifyNoInteractions(idGenerator);
+        Mockito.verifyNoMoreInteractions(userDao);
+    }
+
+    @Test
+    public void testSaveUserWithException() {
+        // 注入依赖对象
+        Whitebox.setInternalState(userService, "canModify", Boolean.FALSE);
+
+        // 模拟依赖方法:userDao.getIdByName
+        Long userId = 123L;
+        Mockito.doReturn(userId).when(userDao).getIdByName(Mockito.anyString());
+
+        // 调用测试方法
+        String path = RESOURCE_PATH + "testSaveUserWithException/";
+        String text = ResourceHelper.getResourceAsString(getClass(), path + "userSave.json");
+        UserVO userSave = JSON.parseObject(text, UserVO.class);
+        UnsupportedOperationException exception = Assert.assertThrows("异常类型不一致",
+                UnsupportedOperationException.class, () -> userService.saveUser(userSave));
+        Assert.assertEquals("异常消息不一致", "不支持修改", exception.getMessage());
+
+        // 验证依赖方法:userDao.getIdByName
+        Mockito.verify(userDao).getIdByName(userSave.getName());
+
+        // 验证依赖对象
+        Mockito.verifyNoInteractions(idGenerator);
+        Mockito.verifyNoMoreInteractions(userDao);
+    }
 }
