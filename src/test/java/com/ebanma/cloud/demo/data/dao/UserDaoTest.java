@@ -12,13 +12,19 @@ import javax.annotation.Resource;
 @SpringBootTest(classes = {DaoApplication.class})
 public class UserDaoTest {
     @Resource
-    private UserDao userDao;
+    private UserDao userDAO;
 
     @Test
     public void testGetIdByName() {
         Long userId = 1L;
         String userName = "test";
-        Assert.assertEquals("用户标识不一致", userId, userDao.getIdByName(userName));
+        Assert.assertEquals("用户标识不一致", userId, userDAO.getIdByName(userName));
+    }
+
+    @Test
+    public void testDelete() {
+        Long userId = 1L;
+        Assert.assertEquals("删除数量不一致", Integer.valueOf(1), userDAO.delete(userId));
     }
 
 }

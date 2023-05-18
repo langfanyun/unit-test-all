@@ -1,8 +1,10 @@
 package com.ebanma.cloud.demo.domain.service;
 
-import com.ebanma.cloud.demo.data.dao.UserDAO;
+import com.ebanma.cloud.demo.data.dao.UserDao;
 import com.ebanma.cloud.demo.data.model.UserDO;
 import com.ebanma.cloud.demo.domain.entity.UserVO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -11,15 +13,16 @@ import java.util.Objects;
 
 @Service
 public class UserService {
-
+    /* 定义依赖对象 **/
     @Autowired
-    private UserDAO userDao;
+    private UserDao userDao;
     @Autowired
     private IdGenerator idGenerator;
-
+    /* 定义依赖参数 **/
     @Value("${userService.canModify}")
     private Boolean canModify;
 
+    /* 保存用户 **/
     public Long saveUser(UserVO userSave) {
         Long userId = userDao.getIdByName(userSave.getName());
         // 不存在则创建
@@ -41,9 +44,10 @@ public class UserService {
         }
         // 已存在禁止修改
         else {
-            throw  new UnsupportedOperationException("不支持修改");
+            throw new UnsupportedOperationException("不支持修改");
         }
         // 返回用户标识
         return userId;
     }
+
 }
